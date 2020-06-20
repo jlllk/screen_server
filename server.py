@@ -4,8 +4,11 @@ from screenshoter import get_screenshot
 
 
 async def screen_server(request):
-    url = request.rel_url.query['url']
-    screen = get_screenshot(url)
+    try:
+        url = request.rel_url.query['url']
+        screen = get_screenshot(url)
+    except Exception:
+        return web.Response(text="Hello, world")
     return web.Response(body=screen, content_type='image/jpeg')
 
 
