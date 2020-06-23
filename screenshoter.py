@@ -6,7 +6,7 @@ from requests import post
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
-LIBRARY = 'http://a7df525d98b7.ngrok.io/save/screenshot'
+LIBRARY = 'http://127.0.0.1:5000/save/screenshot'
 
 FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(

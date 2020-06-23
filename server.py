@@ -1,8 +1,14 @@
 import logging
 import os
 import subprocess
+from rq import Queue
+from redis import Redis
 
 from aiohttp import web
+from screenshoter import get_screenshot
+
+redis_conn = Redis()
+queue = Queue(connection=redis_conn)
 
 
 FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
@@ -23,19 +29,12 @@ async def screen_server(request):
     if url is None or id is None or token is None:
         return web.HTTPBadRequest(text='Нужные параметры отсутствуют')
 
-    try:
-        dirname = os.path.dirname(os.path.abspath(__file__))
-        script_path = os.path.join(dirname, 'screenshoter.py')
-        subprocess.run(
-            ['python', f'{script_path}', f'{id}', f'{url}', f'{token}', '&'],
-            shell=True,
-            timeout=60
-        )
-    except subprocess.SubprocessError as e:
-        return web.HTTPInternalServerError(text=f'Ошибка на сервере: {e}')
+    job = queue.enqueue(get_screenshot, id, url, token)
+    print(job.result)
 
     return web.HTTPOk(text='Ваш запрос принят')
 
 
 app = web.Application()
 app.router.add_route('GET', '/', screen_server)
+web.run_app(app)
