@@ -27,7 +27,7 @@ async def screen_server(request):
         dirname = os.path.dirname(os.path.abspath(__file__))
         script_path = os.path.join(dirname, 'screenshoter.py')
         subprocess.run(
-            [f'python {script_path} {id} {url} {token} &'],
+            ['python', f'{script_path}', f'{id}', f'{url}', f'{token}', '&'],
             shell=True,
             timeout=60
         )
