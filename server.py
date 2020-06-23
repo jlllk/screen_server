@@ -1,16 +1,40 @@
+import logging
+import os
+import subprocess
+
 from aiohttp import web
 
-from screenshoter import get_screenshot
+
+FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
+logging.basicConfig(
+    format=FORMAT,
+    level=10,
+    filename='logs/server/server.log',
+    filemode='a',
+)
 
 
 async def screen_server(request):
     params = request.rel_url.query
     url = params.get('url')
-    if url is None:
-        return web.Response(text="Hello, world")
+    id = params.get('id')
+    token = params.get('token')
 
-    screen = get_screenshot(url)
-    return web.Response(body=screen, content_type='image/jpeg')
+    if url is None or id is None or token is None:
+        return web.HTTPBadRequest(text='Нужные параметры отсутствуют')
+
+    try:
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        script_path = os.path.join(dirname, 'screenshoter.py')
+        subprocess.run(
+            [f'python {script_path} {id} {url} {token} &'],
+            shell=True,
+            timeout=60
+        )
+    except subprocess.SubprocessError as e:
+        return web.HTTPInternalServerError(text=f'Ошибка на сервере: {e}')
+
+    return web.HTTPOk(text='Ваш запрос принят')
 
 
 app = web.Application()
