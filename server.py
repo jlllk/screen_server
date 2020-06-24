@@ -1,6 +1,4 @@
 import logging
-import os
-import subprocess
 from rq import Queue
 from redis import Redis
 
@@ -29,8 +27,7 @@ async def screen_server(request):
     if url is None or id is None or token is None:
         return web.HTTPBadRequest(text='Нужные параметры отсутствуют')
 
-    job = queue.enqueue(get_screenshot, id, url, token)
-    print(job.result)
+    queue.enqueue(get_screenshot, id, url, token)
 
     return web.HTTPOk(text='Ваш запрос принят')
 

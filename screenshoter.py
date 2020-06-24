@@ -52,7 +52,7 @@ def get_screenshot(id, url, token):
         logging.exception('Web driver exceptions')
 
     status = send_image(id, screen, token)
-    logging.info(f'Скрин отправлен. Статус ответа: {status}')
+    logging.info('Скрин отправлен. Статус ответа: {st}'.format(st=status))
 
 
 if __name__ == '__main__':
