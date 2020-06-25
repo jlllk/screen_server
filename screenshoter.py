@@ -6,7 +6,6 @@ from requests import post
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
-LIBRARY = 'https://08748c27f5ef.ngrok.io/save/screenshot'
 
 FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(
@@ -17,7 +16,7 @@ logging.basicConfig(
 )
 
 
-def send_image(id, screen, token):
+def send_image(id, screen, token, request_url):
     data = {
         'id': id,
         'token': token
@@ -26,14 +25,14 @@ def send_image(id, screen, token):
         'screen': screen
     }
     r = post(
-        url=LIBRARY,
+        url=request_url + '/save/screenshot',
         data=data,
         files=files
     )
     return r.status_code
 
 
-def get_screenshot(id, url, token):
+def get_screenshot(id, url, token, request_url):
     current_path = os.path.dirname(os.path.abspath(__file__))
     geckodriver_path = os.path.join(current_path, 'geckodriver')
 
@@ -51,8 +50,12 @@ def get_screenshot(id, url, token):
     except WebDriverException:
         logging.exception('Web driver exceptions')
 
-    status = send_image(id, screen, token)
-    logging.info('Скрин отправлен. Статус ответа: {st}'.format(st=status))
+    status = send_image(id, screen, token, request_url)
+    logging.info(
+        'Скрин отправлен на {url}. Статус ответа: {st}'.format(
+            st=status, url=request_url
+        )
+    )
 
 
 if __name__ == '__main__':
