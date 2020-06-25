@@ -35,4 +35,3 @@ async def screen_server(request):
 
 app = web.Application()
 app.router.add_route('GET', '/', screen_server)
-web.run_app(app)
