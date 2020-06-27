@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 
 from requests import post
 from selenium import webdriver
@@ -17,19 +16,21 @@ logging.basicConfig(
 
 
 def send_image(id, screen, token, request_url):
-    data = {
-        'id': id,
-        'token': token
-    }
-    files = {
-        'screen': screen
-    }
-    r = post(
-        url=request_url + '/save/screenshot',
-        data=data,
-        files=files
-    )
-    return r.status_code
+    if screen:
+        data = {
+            'id': id,
+            'token': token
+        }
+        files = {
+            'screen': screen
+        }
+        r = post(
+            url=request_url + '/save/screenshot',
+            data=data,
+            files=files
+        )
+        return r.status_code
+    return 'Не получилось создать скриншот'
 
 
 def get_screenshot(id, url, token, request_url):
@@ -46,9 +47,10 @@ def get_screenshot(id, url, token, request_url):
     try:
         driver.get(url)
         screen = driver.get_screenshot_as_png()
+    except WebDriverException as e:
+        logging.exception(f'Web driver exceptions: {e}')
+    finally:
         driver.quit()
-    except WebDriverException:
-        logging.exception('Web driver exceptions')
 
     status = send_image(id, screen, token, request_url)
     logging.info(
@@ -56,8 +58,3 @@ def get_screenshot(id, url, token, request_url):
             st=status, url=request_url
         )
     )
-
-
-if __name__ == '__main__':
-    args = sys.argv
-    get_screenshot(id=args[1], url=args[2], token=args[3])
