@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 from requests import post
 from selenium import webdriver
@@ -46,6 +47,7 @@ def get_screenshot(id, url, token, request_url):
 
     try:
         driver.get(url)
+        time.sleep(3)
         screen = driver.get_screenshot_as_png()
     except WebDriverException as e:
         logging.exception(f'Web driver exceptions: {e}')
