@@ -50,7 +50,7 @@ def get_screenshot(id, url, token, request_url):
         time.sleep(3)
         screen = driver.get_screenshot_as_png()
     except WebDriverException as e:
-        logging.exception(f'Web driver exceptions: {e}')
+        logging.exception('Web driver exceptions: {e}'.format(e=e))
     finally:
         driver.quit()
 
