@@ -28,7 +28,12 @@ async def screen_server(request):
     if url is None or id is None or token is None or request_url is None:
         return web.HTTPBadRequest(text='Нужные параметры отсутствуют')
 
-    queue.enqueue(get_screenshot, id, url, token, request_url)
+    queue.enqueue(
+        get_screenshot,
+        args=(id, url, token, request_url),
+        result_ttl=0,
+        job_timeout=30
+    )
 
     return web.HTTPOk(text='Ваш запрос принят')
 
